@@ -8,4 +8,4 @@ To install, you'll want a virtual environment with the following:
 4. Replace your email Id in settings.py where it asks for USER NAME
 5. Login with super user in admin panel where u can add subscriber and send mails to all the recipients.
 
-There are few errors in the code which will be fixed in coming days.
+There are few errors in the code which will be fixed in coming days and add filters for different category of mails.
