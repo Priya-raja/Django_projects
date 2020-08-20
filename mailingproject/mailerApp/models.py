@@ -1,39 +1,28 @@
 # Create your models here.
 from django.db import models
 from django.conf import settings
+from .forms import CustomUserCreationForm
 from django.contrib.auth.models import User
-from django.core.mail import send_mail, BadHeaderError, EmailMultiAlternatives
 
 
-# Create your models here.
-
-
-class Subscriber(models.Model):
-    email = models.EmailField(unique=True)
-    conf_num = models.CharField(max_length=15)
-    confirmed = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.email + " (" + str(self.confirmed) + ")"
-
+from django.core.mail import EmailMultiAlternatives
 
 class Newsletter(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     subject = models.CharField(max_length=150)
-    contents = models.TextField()
+    contents = models.TextField(max_length=200)
 
     def __str__(self):
-        return self.subject + " " + self.created_at.strftime("%B %d, %Y")
+        return self.subject + self.contents
+
 
 
     def send(self, request):
 
-        subscribers = Subscriber.objects.filter(confirmed=True)
-
-        for sub in subscribers:
+        for user in User.objects.get(email=request.GET['email']):
             from_email = settings.FROM_EMAIL,
-            to = sub.email,
+            to = user.email,
             subject = self.subject,
 
             html_content = self.contents

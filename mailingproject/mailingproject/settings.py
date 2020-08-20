@@ -121,10 +121,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = 'dashboard'
 
 FROM_EMAIL = 'priya_raja@icloud.com'
-SENDGRID_API_KEY = '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'
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 465,

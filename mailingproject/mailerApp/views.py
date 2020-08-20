@@ -1,54 +1,54 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.conf import settings
-from django.core.mail import send_mail
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import logout
+from django.contrib.auth.models import User
+
 from django.views.decorators.csrf import csrf_exempt
-from .models import Subscriber
-from .forms import SubscriberForm
+from .forms import CustomUserCreationForm
+from django.urls import reverse
 
-from django.core.mail import send_mail, BadHeaderError, EmailMultiAlternatives
 
-from django.http import HttpResponse
-import random
+
+from django.core.mail import EmailMultiAlternatives
+
 
 
 # Create your views here.
 # Helper Functions
-def index(request):
-    return render(request, 'mailerApp/subscribe.html')
-def random_digits():
-    return "%0.12d" % random.randint(0, 999999999999)
+
+def dashboard(request):
+    return render(request, "mailerApp/dashboard.html")
+
+
+def register(request):
+    if request.method == "GET":
+        return render(
+            request, "registration/register.html",
+            {"form": CustomUserCreationForm}
+        )
+    elif request.method == "POST":
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect(reverse("dashboard"))
 
 @csrf_exempt
 def new_contact(request):
     if request.method == 'POST':
-        sub = Subscriber(email=request.POST['email'], conf_num=random_digits())
-        sub.save()
+        receiver = User(email=request.POST['email'])
+        receiver.save()
         subject = 'Newsletter Confirmation',
         from_email = settings.FROM_EMAIL,
-        to = sub.email,
+        to = receiver.email,
         html_content = '<p> Thank you </p>'
         msg = EmailMultiAlternatives(subject, html_content, from_email, to)
 
         response = msg.send()
-        render(request, 'mailerApp/subscribe.html', {'email': to, 'action': 'added', 'form': SubscriberForm()})
+        render(request, 'mailerApp/subscribe.html', {'email': to, 'action': 'added', 'form': CustomUserCreationForm})
     else:
-        return render(request, 'mailerApp/subscribe.html', {'form': SubscriberForm()})
+        return render(request, 'mailerApp/subscribe.html', {'form': CustomUserCreationForm})
 
 
 
-def confirm(request):
-    sub = Subscriber.objects.get(email=request.GET['email'])
-    if sub.conf_num == request.GET['conf_num']:
-        sub.confirmed = True
-        sub.save()
-        return render(request, 'index.html', {'email': sub.email, 'action': 'confirmed'})
-    else:
-        return render(request, 'index.html', {'email': sub.email, 'action': 'denied'})
-
-def delete(request):
-    sub = Subscriber.objects.get(email=request.GET['email'])
-    if sub.conf_num == request.GET['conf_num']:
-        sub.delete()
-        return render(request, 'index.html', {'email': sub.email, 'action': 'unsubscribed'})
-    else:
-        return render(request, 'index.html', {'email': sub.email, 'action': 'denied'})

@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class MailerappConfig(AppConfig):
+class MailerAppConfig(AppConfig):
     name = 'mailerApp'
