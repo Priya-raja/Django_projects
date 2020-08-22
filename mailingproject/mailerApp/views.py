@@ -1,10 +1,12 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-from django.contrib.auth import logout
-from django.contrib.auth.models import User
 
-from django.views.decorators.csrf import csrf_exempt
+
+from django.shortcuts import get_object_or_404, render
+from .models import Subscriber, Newsletter
+from django.http import HttpResponse, HttpResponseRedirect
+from django.views.decorators.http import require_POST
 from .forms import CustomUserCreationForm
 from django.urls import reverse
 
@@ -34,21 +36,52 @@ def register(request):
             login(request, user)
             return redirect(reverse("dashboard"))
 
-@csrf_exempt
-def new_contact(request):
+def new_mail(request):
+    all_emails = Subscriber.objects.all()
+
+    return render(request, 'mailerApp/subscriber.html', {'all_emails': all_emails})
+
+def add_new_mail(request):
+    receiver = Subscriber(email_field=request.POST.get('email_field', False))
+    receiver.save()
+    print(receiver)
+    return HttpResponseRedirect('/new_mail/')
+
+def delete_new_mail(request, mail_id):
+    mail_delete = Subscriber.objects.get(id=mail_id)
+    mail_delete.delete()
+    return HttpResponseRedirect('/new_mail/')
+
+def send(request):
+    send_mail = Newsletter.objects.all()
     if request.method == 'POST':
-        receiver = User(email=request.POST['email'])
+        receiver = Subscriber(email_field=request.POST.get('email_field', False))
         receiver.save()
         subject = 'Newsletter Confirmation',
         from_email = settings.FROM_EMAIL,
-        to = receiver.email,
+        to = receiver.email_field,
         html_content = '<p> Thank you </p>'
         msg = EmailMultiAlternatives(subject, html_content, from_email, to)
 
         response = msg.send()
-        render(request, 'mailerApp/subscribe.html', {'email': to, 'action': 'added', 'form': CustomUserCreationForm})
+        render(request, 'mailerApp/newsletter.html', {'email': to, 'action': 'added'})
     else:
-        return render(request, 'mailerApp/subscribe.html', {'form': CustomUserCreationForm})
+        return render(request, 'mailerApp/newsletter.html', {'send_mail': send_mail})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

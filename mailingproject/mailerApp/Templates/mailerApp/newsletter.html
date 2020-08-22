@@ -1,0 +1,39 @@
+{% extends "mailerApp/base.html" %}
+{% block title %}  {% endblock %}
+
+{% block content %}
+{% csrf_token %}
+  <form>
+      <div class="form-group">
+    <label for="exampleFormControlSelect1">Email address</label>
+    <select class="form-control" id="exampleFormControlSelect1" placeholder="name@example.com">
+
+
+        <option>
+        {% for user in all_emails %}
+            {{ user.email_field  }}
+
+
+        </option>
+        {% endfor %}
+
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="exampleFormControlInput2">Subject</label>
+    <input type="email" class="form-control" id="exampleFormControlInput2" >
+  </div>
+
+  <div class="form-group">
+    <label for="exampleFormControlTextarea1">Body</label>
+    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+  </div>
+</form>
+ <div class="btn" >
+            <button type="submit" class="btn btn-success">Send</button>
+        </div>
+ <div class="btn" >
+            <button type="submit" class="btn btn-success">Drafts</button>
+        </div>
+
+{% endblock %}

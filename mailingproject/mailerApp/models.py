@@ -3,9 +3,17 @@ from django.db import models
 from django.conf import settings
 from .forms import CustomUserCreationForm
 from django.contrib.auth.models import User
-
-
 from django.core.mail import EmailMultiAlternatives
+
+
+class Subscriber(models.Model):
+
+    email_field = models.EmailField(max_length=254)
+    name = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.name + self.email_field
+
 
 class Newsletter(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -18,15 +26,3 @@ class Newsletter(models.Model):
 
 
 
-    def send(self, request):
-
-        for user in User.objects.get(email=request.GET['email']):
-            from_email = settings.FROM_EMAIL,
-            to = user.email,
-            subject = self.subject,
-
-            html_content = self.contents
-
-            msg = EmailMultiAlternatives(subject, html_content, from_email, to)
-
-            msg.send()

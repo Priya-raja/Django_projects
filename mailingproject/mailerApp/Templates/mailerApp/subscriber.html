@@ -1,0 +1,41 @@
+{% extends "mailerApp/base.html" %}
+{% block title %}  {% endblock %}
+
+{% block content %}
+{% csrf_token %}
+  Hello
+
+
+<div class="row mt-4 ">
+    <form action="/add_new_mail/"  method="post" class="form-inline">
+    {% csrf_token %}
+    <input type="text" placeholder="Name" name="name">
+    <input type="text" placeholder="Email address" name="email_field">
+    <br>
+        <div class="btn" >
+            <button type="submit" class="btn btn-success">Subscribe!</button>
+        </div>
+
+   </form>
+ </div>
+
+<div class="row mt-4">
+    <div class="col">
+    <ul class="list-group">
+     {% for user in all_emails %}
+     <li class="list-group-item"> {{ user.email_field  }}
+         <form action="/delete_new_mail/{{user.id}}/"
+              method="post">
+         {% csrf_token %}
+        <div class="float-right btn">
+         <button  type="submit" class="btn btn-success">Delete</button>
+            </div>
+          </form>
+
+    {% endfor %}
+     </li>
+    </ul>
+        </div>
+    </div>
+
+{% endblock %}
