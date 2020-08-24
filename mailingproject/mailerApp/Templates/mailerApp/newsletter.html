@@ -2,38 +2,35 @@
 {% block title %}  {% endblock %}
 
 {% block content %}
-{% csrf_token %}
-  <form>
-      <div class="form-group">
-    <label for="exampleFormControlSelect1">Email address</label>
-    <select class="form-control" id="exampleFormControlSelect1" placeholder="name@example.com">
+<div>
 
+  <form action="/send/" method="post">
+  {% csrf_token %}
+    <label for="exampleFormControlInput">Email address</label>
 
-        <option>
-        {% for user in all_emails %}
-            {{ user.email_field  }}
+    <input type="email" id="exampleFormControlInput"  name="email">
 
-
-        </option>
-        {% endfor %}
-
-    </select>
-  </div>
-  <div class="form-group">
-    <label for="exampleFormControlInput2">Subject</label>
-    <input type="email" class="form-control" id="exampleFormControlInput2" >
-  </div>
-
-  <div class="form-group">
+    <label for="exampleFormControlTextarea2">Subject</label>
+    <input class="form-control" class="form-control" id="exampleFormControlTextarea2" name="subject">
     <label for="exampleFormControlTextarea1">Body</label>
-    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-  </div>
-</form>
+    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="contents"></textarea>
  <div class="btn" >
-            <button type="submit" class="btn btn-success">Send</button>
-        </div>
- <div class="btn" >
-            <button type="submit" class="btn btn-success">Drafts</button>
+     <button type="submit" class="btn btn-success">Send</button>
+ </div>
+  </form>
+
+    <br>
+        <div class="float-right btn">
+            <form action="/add_draft/"  method="post" class="form-inline">
+           {% csrf_token %}
+            <a href="{% url 'add_draft' %}">
+                <button  type="submit" class="btn btn-success">Draft</button> </a>
+      </form>
+            </div>
+
+<!--  Saving Drafts --->
+
+
         </div>
 
 {% endblock %}

@@ -16,13 +16,15 @@ class Subscriber(models.Model):
 
 
 class Newsletter(models.Model):
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    email = models.EmailField(max_length=254)
     subject = models.CharField(max_length=150)
     contents = models.TextField(max_length=200)
 
     def __str__(self):
-        return self.subject + self.contents
+        return self.subject + self.contents + self.email
 
 
 

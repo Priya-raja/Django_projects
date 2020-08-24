@@ -1,0 +1,26 @@
+{% extends "mailerApp/base.html" %}
+{% block title %}  {% endblock %}
+
+{% block content %}
+{% csrf_token %}
+
+<div class="row mt-4 ">
+    <form action="/add_draft/" method="post" class="form-inline">
+    {% csrf_token %}
+   </form>
+ </div>
+
+<h1> Draft Mails</h1>
+
+    <ul class="list-group">
+     {% for user in messages %}
+     <li class="list-group-item">
+         {{ user.email }}
+         {{ user.subject }}
+         {{ user.body }}
+
+    {% endfor %}
+     </li>
+
+        </ul>
+{% endblock %}

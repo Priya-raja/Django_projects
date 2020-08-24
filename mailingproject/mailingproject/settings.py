@@ -125,13 +125,12 @@ LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'dashboard'
 
 FROM_EMAIL = 'priya_raja@icloud.com'
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_PORT = 465,
+EMAIL_HOST ='smtp.sendgrid.net'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = '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'
 
 
 

@@ -1,18 +1,13 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.contrib.auth import authenticate, login
-
-
-from django.shortcuts import get_object_or_404, render
+from django.contrib.auth import login
+from django.shortcuts import  render
 from .models import Subscriber, Newsletter
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
 from .forms import CustomUserCreationForm
 from django.urls import reverse
-
-
-
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import send_mail, BadHeaderError
 
 
 
@@ -52,21 +47,49 @@ def delete_new_mail(request, mail_id):
     mail_delete.delete()
     return HttpResponseRedirect('/new_mail/')
 
-def send(request):
-    send_mail = Newsletter.objects.all()
-    if request.method == 'POST':
-        receiver = Subscriber(email_field=request.POST.get('email_field', False))
-        receiver.save()
-        subject = 'Newsletter Confirmation',
-        from_email = settings.FROM_EMAIL,
-        to = receiver.email_field,
-        html_content = '<p> Thank you </p>'
-        msg = EmailMultiAlternatives(subject, html_content, from_email, to)
+def save_draft(request):
+    messages = Newsletter.objects.all()
+    return render(request, 'mailerApp/newsletter.html', {'messages': messages})
 
-        response = msg.send()
-        render(request, 'mailerApp/newsletter.html', {'email': to, 'action': 'added'})
+def add_draft(request):
+    receiver = Newsletter(email=request.POST.get('email', False))
+    receiver.save()
+    subject = Newsletter(subject=request.POST.get('subject', False))
+    subject.save()
+    html_content = Newsletter(contents=request.POST.get('contents', False))
+    html_content.save()
+    draft_mail = [subject, html_content, settings.FROM_EMAIL, [receiver]]
+
+    return render(request, 'mailerApp/draft_mail.html')
+
+
+
+@require_POST
+def send(request):
+    receiver = Newsletter(email=request.POST.get('email', False))
+    subject = Newsletter(subject=request.POST.get('subject', False))
+    from_email = settings.FROM_EMAIL,
+    to = receiver,
+    html_content = Newsletter(contents=request.POST.get('contents', False))
+    html_content.save()
+    if subject and html_content and from_email:
+        try:
+            send_mail(subject, html_content, from_email, [to], fail_silently=False, )
+        except BadHeaderError:
+            return HttpResponse('Invalid header found.')
+        return render(request, 'mailerApp/newsletter.html', {'receiver': receiver, 'action': send})
     else:
-        return render(request, 'mailerApp/newsletter.html', {'send_mail': send_mail})
+        # In reality we'd use a form class
+        # to get proper validation errors.
+        return HttpResponseRedirect('/add_draft/')
+
+def delete_draft(request):
+    mail_delete = Newsletter.objects.all()
+    mail_delete.delete()
+    return HttpResponseRedirect('/save_draft/')
+
+
+
 
 
 
